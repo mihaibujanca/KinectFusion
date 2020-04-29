@@ -28,7 +28,7 @@ bfilter_color_sigma = 1.0
 bfilter_spatial_sigma = 1.0
 
 # The initial distance of the camera from the volume center along the z-axis (in mm)
-init_depth = 1000.0
+init_depth = 1500.0
 
 # Downloads the model frame for each frame (for visualization purposes). If this is set to true, you can
 # retrieve the frame with Pipeline::get_last_model_frame()

@@ -57,8 +57,6 @@ auto make_camera(const std::shared_ptr<cpptoml::table>& toml_config)
         std::stringstream source_path {};
         source_path << data_path << "source/" << recording_name << "/";
         camera = std::make_unique<PseudoCamera>(source_path.str());
-    } else if (camera_type == "Xtion") {
-        camera = std::make_unique<XtionCamera>();
     } else if (camera_type == "RealSense") {
         if(*toml_config->get_qualified_as<bool>("camera.realsense.live")) {
             camera = std::make_unique<RealSenseCamera>();

@@ -9,7 +9,7 @@
 #pragma GCC diagnostic ignored "-Wall"
 #pragma GCC diagnostic ignored "-Wextra"
 #pragma GCC diagnostic ignored "-Weffc++"
-#include <PS1080.h>
+//#include <PS1080.h>
 #include <opencv2/imgproc.hpp>
 #include <opencv2/imgcodecs.hpp>
 #include <opencv/cv.hpp>
@@ -59,123 +59,123 @@ CameraParameters PseudoCamera::get_parameters() const
 {
     return cam_params;
 }
-
-// ### Asus Xtion PRO LIVE
-XtionCamera::XtionCamera() :
-        device{}, depthStream{}, colorStream{}, depthFrame{},
-        colorFrame{}, cam_params{}
-{
-    openni::OpenNI::initialize();
-
-    openni::Array<openni::DeviceInfo> deviceInfoList;
-    openni::OpenNI::enumerateDevices(&deviceInfoList);
-
-    std::cout << deviceInfoList.getSize() << std::endl;
-    for (int i = 0; i < deviceInfoList.getSize(); ++i) {
-        std::cout << deviceInfoList[i].getName() << ", "
-                  << deviceInfoList[i].getVendor() << ", "
-                  << deviceInfoList[i].getUri() << ", "
-                  << std::endl;
-    }
-
-    auto ret = device.open(openni::ANY_DEVICE);
-    if (ret != openni::STATUS_OK)
-        throw std::runtime_error{"OpenNI device could not be opened"};
-
-    openni::VideoMode depthMode;
-    depthMode.setResolution(640, 480);
-    depthMode.setFps(30);
-    depthMode.setPixelFormat(openni::PIXEL_FORMAT_DEPTH_1_MM);
-
-    openni::VideoMode colorMode;
-    colorMode.setResolution(640, 480);
-    colorMode.setFps(30);
-    colorMode.setPixelFormat(openni::PIXEL_FORMAT_RGB888);
-
-    depthStream.create(device, openni::SENSOR_DEPTH);
-    depthStream.setVideoMode(depthMode);
-    depthStream.start();
-
-    colorStream.create(device, openni::SENSOR_COLOR);
-    colorStream.setVideoMode(colorMode);
-
-    openni::CameraSettings *cameraSettings = colorStream.getCameraSettings();
-    cameraSettings->setAutoExposureEnabled(true);
-    cameraSettings->setAutoWhiteBalanceEnabled(true);
-    cameraSettings = colorStream.getCameraSettings();
-
-
-    if (cameraSettings != nullptr) {
-        std::cout << "Camera Settings" << std::endl;
-        std::cout << " Auto Exposure Enabled      : " << cameraSettings->getAutoExposureEnabled() << std::endl;
-        std::cout << " Auto WhiteBalance Enabled  : " << cameraSettings->getAutoWhiteBalanceEnabled() << std::endl;
-        std::cout << " Exposure                   : " << cameraSettings->getExposure() << std::endl;
-        std::cout << " Gain                       : " << cameraSettings->getGain() << std::endl;
-    }
-
-    colorStream.start();
-
-    if (device.setDepthColorSyncEnabled(true) != openni::STATUS_OK) {
-        std::cout << "setDepthColorSyncEnabled is disabled" << std::endl;
-    }
-    if (device.setImageRegistrationMode(openni::IMAGE_REGISTRATION_DEPTH_TO_COLOR) != openni::STATUS_OK) {
-        std::cout << "setImageRegistrationMode is disabled" << std::endl;
-    }
-
-    double pixelSize;
-    depthStream.getProperty<double>(XN_STREAM_PROPERTY_ZERO_PLANE_PIXEL_SIZE, &pixelSize);
-
-    // pixel size @ VGA = pixel size @ SXGA x 2
-    pixelSize *= 2.0; // in mm
-
-    // focal length of IR camera in pixels for VGA resolution
-    int zeroPlaneDistance; // in mm
-    depthStream.getProperty(XN_STREAM_PROPERTY_ZERO_PLANE_DISTANCE, &zeroPlaneDistance);
-
-    double baseline;
-    depthStream.getProperty<double>(XN_STREAM_PROPERTY_EMITTER_DCMOS_DISTANCE, &baseline);
-    baseline *= 10.0;
-
-    // focal length from mm -> pixels (valid for 640x480)
-    double depthFocalLength_VGA = (int) (static_cast<double>(zeroPlaneDistance) / pixelSize);
-
-    CameraParameters cp {};
-    cp.image_width = depthStream.getVideoMode().getResolutionX();
-    cp.image_height = depthStream.getVideoMode().getResolutionY();
-    cp.focal_x = cp.focal_y = (float) depthFocalLength_VGA;
-    cp.principal_x = cp.image_width / 2 - 0.5f;
-    cp.principal_y = cp.image_height / 2 - 0.5f;
-
-    cam_params = cp;
-}
-
-InputFrame XtionCamera::grab_frame() const
-{
-    depthStream.readFrame(&depthFrame);
-    colorStream.readFrame(&colorFrame);
-
-    if (!depthFrame.isValid() || depthFrame.getData() == nullptr ||
-        !colorFrame.isValid() || colorFrame.getData() == nullptr) {
-        throw std::runtime_error{"Frame data retrieval error"};
-    } else {
-        cv::Mat depthImg16U { depthStream.getVideoMode().getResolutionY(),
-                              depthStream.getVideoMode().getResolutionX(),
-                              CV_16U,
-                              static_cast<char*>(const_cast<void*>(depthFrame.getData())) };
-        cv::Mat depth_image;
-        depthImg16U.convertTo(depth_image, CV_32FC1);
-        cv::flip(depth_image, depth_image, 1);
-
-        cv::Mat color_image { colorStream.getVideoMode().getResolutionY(),
-                              colorStream.getVideoMode().getResolutionX(),
-                              CV_8UC3,
-                              static_cast<char*>(const_cast<void*>(colorFrame.getData())) };
-        cv::cvtColor(color_image, color_image, cv::COLOR_BGR2RGB);
-        cv::flip(color_image, color_image, 1);
-
-        return InputFrame { depth_image, color_image };
-    }
-}
+//
+//// ### Asus Xtion PRO LIVE
+//XtionCamera::XtionCamera() :
+//        device{}, depthStream{}, colorStream{}, depthFrame{},
+//        colorFrame{}, cam_params{}
+//{
+//    openni::OpenNI::initialize();
+//
+//    openni::Array<openni::DeviceInfo> deviceInfoList;
+//    openni::OpenNI::enumerateDevices(&deviceInfoList);
+//
+//    std::cout << deviceInfoList.getSize() << std::endl;
+//    for (int i = 0; i < deviceInfoList.getSize(); ++i) {
+//        std::cout << deviceInfoList[i].getName() << ", "
+//                  << deviceInfoList[i].getVendor() << ", "
+//                  << deviceInfoList[i].getUri() << ", "
+//                  << std::endl;
+//    }
+//
+//    auto ret = device.open(openni::ANY_DEVICE);
+//    if (ret != openni::STATUS_OK)
+//        throw std::runtime_error{"OpenNI device could not be opened"};
+//
+//    openni::VideoMode depthMode;
+//    depthMode.setResolution(640, 480);
+//    depthMode.setFps(30);
+//    depthMode.setPixelFormat(openni::PIXEL_FORMAT_DEPTH_1_MM);
+//
+//    openni::VideoMode colorMode;
+//    colorMode.setResolution(640, 480);
+//    colorMode.setFps(30);
+//    colorMode.setPixelFormat(openni::PIXEL_FORMAT_RGB888);
+//
+//    depthStream.create(device, openni::SENSOR_DEPTH);
+//    depthStream.setVideoMode(depthMode);
+//    depthStream.start();
+//
+//    colorStream.create(device, openni::SENSOR_COLOR);
+//    colorStream.setVideoMode(colorMode);
+//
+//    openni::CameraSettings *cameraSettings = colorStream.getCameraSettings();
+//    cameraSettings->setAutoExposureEnabled(true);
+//    cameraSettings->setAutoWhiteBalanceEnabled(true);
+//    cameraSettings = colorStream.getCameraSettings();
+//
+//
+//    if (cameraSettings != nullptr) {
+//        std::cout << "Camera Settings" << std::endl;
+//        std::cout << " Auto Exposure Enabled      : " << cameraSettings->getAutoExposureEnabled() << std::endl;
+//        std::cout << " Auto WhiteBalance Enabled  : " << cameraSettings->getAutoWhiteBalanceEnabled() << std::endl;
+//        std::cout << " Exposure                   : " << cameraSettings->getExposure() << std::endl;
+//        std::cout << " Gain                       : " << cameraSettings->getGain() << std::endl;
+//    }
+//
+//    colorStream.start();
+//
+//    if (device.setDepthColorSyncEnabled(true) != openni::STATUS_OK) {
+//        std::cout << "setDepthColorSyncEnabled is disabled" << std::endl;
+//    }
+//    if (device.setImageRegistrationMode(openni::IMAGE_REGISTRATION_DEPTH_TO_COLOR) != openni::STATUS_OK) {
+//        std::cout << "setImageRegistrationMode is disabled" << std::endl;
+//    }
+//
+//    double pixelSize;
+//    depthStream.getProperty<double>(XN_STREAM_PROPERTY_ZERO_PLANE_PIXEL_SIZE, &pixelSize);
+//
+//    // pixel size @ VGA = pixel size @ SXGA x 2
+//    pixelSize *= 2.0; // in mm
+//
+//    // focal length of IR camera in pixels for VGA resolution
+//    int zeroPlaneDistance; // in mm
+//    depthStream.getProperty(XN_STREAM_PROPERTY_ZERO_PLANE_DISTANCE, &zeroPlaneDistance);
+//
+//    double baseline;
+//    depthStream.getProperty<double>(XN_STREAM_PROPERTY_EMITTER_DCMOS_DISTANCE, &baseline);
+//    baseline *= 10.0;
+//
+//    // focal length from mm -> pixels (valid for 640x480)
+//    double depthFocalLength_VGA = (int) (static_cast<double>(zeroPlaneDistance) / pixelSize);
+//
+//    CameraParameters cp {};
+//    cp.image_width = depthStream.getVideoMode().getResolutionX();
+//    cp.image_height = depthStream.getVideoMode().getResolutionY();
+//    cp.focal_x = cp.focal_y = (float) depthFocalLength_VGA;
+//    cp.principal_x = cp.image_width / 2 - 0.5f;
+//    cp.principal_y = cp.image_height / 2 - 0.5f;
+//
+//    cam_params = cp;
+//}
+//
+//InputFrame XtionCamera::grab_frame() const
+//{
+//    depthStream.readFrame(&depthFrame);
+//    colorStream.readFrame(&colorFrame);
+//
+//    if (!depthFrame.isValid() || depthFrame.getData() == nullptr ||
+//        !colorFrame.isValid() || colorFrame.getData() == nullptr) {
+//        throw std::runtime_error{"Frame data retrieval error"};
+//    } else {
+//        cv::Mat depthImg16U { depthStream.getVideoMode().getResolutionY(),
+//                              depthStream.getVideoMode().getResolutionX(),
+//                              CV_16U,
+//                              static_cast<char*>(const_cast<void*>(depthFrame.getData())) };
+//        cv::Mat depth_image;
+//        depthImg16U.convertTo(depth_image, CV_32FC1);
+//        cv::flip(depth_image, depth_image, 1);
+//
+//        cv::Mat color_image { colorStream.getVideoMode().getResolutionY(),
+//                              colorStream.getVideoMode().getResolutionX(),
+//                              CV_8UC3,
+//                              static_cast<char*>(const_cast<void*>(colorFrame.getData())) };
+//        cv::cvtColor(color_image, color_image, cv::COLOR_BGR2RGB);
+//        cv::flip(color_image, color_image, 1);
+//
+//        return InputFrame { depth_image, color_image };
+//    }
+//}
 
 CameraParameters XtionCamera::get_parameters() const
 {

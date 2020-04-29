@@ -13,7 +13,7 @@
 #pragma GCC diagnostic ignored "-Wextra"
 #pragma GCC diagnostic ignored "-Weffc++"
 #pragma GCC diagnostic ignored "-Wunused-variable"
-#include <OpenNI.h>
+//#include <OpenNI.h>
 #pragma GCC diagnostic pop
 
 #include <librealsense2/rs.hpp>
@@ -71,11 +71,11 @@ public:
     CameraParameters get_parameters() const override;
 
 private:
-    openni::Device device;
-    mutable openni::VideoStream depthStream;
-    mutable openni::VideoStream colorStream;
-    mutable openni::VideoFrameRef depthFrame;
-    mutable openni::VideoFrameRef colorFrame;
+//    openni::Device device;
+//    mutable openni::VideoStream depthStream;
+//    mutable openni::VideoStream colorStream;
+//    mutable openni::VideoFrameRef depthFrame;
+//    mutable openni::VideoFrameRef colorFrame;
 
     CameraParameters cam_params;
 };
